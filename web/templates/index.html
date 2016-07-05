@@ -1,31 +1,17 @@
-<script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
-<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/i18n/jquery-ui-i18n.js"></script>
-<script src="https://use.fontawesome.com/3d56797dc2.js"></script>
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-<script src="{{url_for('service.mrpcjs')}}"></script>
-<script src="{{url_for('static', filename='class.js')}}"></script>
-<script src="{{url_for('static', filename='widget.js')}}"></script>
-<link href="{{url_for('static', filename='css/main.css')}}" rel="stylesheet">
+{% extends "base.html" %}
 
-<body>
+{% block content %}
+<div class='row'>
+    <div class='col-xs-6' id = "result"></div>
+</div>
+{% endblock %}
 
-    <div id="page-wrapper" class="active">
-        <div class='row'>
-            <div class='col-xs-6' id = "result"></div>
-        </div>
-    </div>
-</body>
+{% block script %}
 <script>
-    var apiwidget = new Widget("Herp");
-    apiwidget.add(new Button("/SimpleService", "echo", "Hello home!", "Echo"));
-    apiwidget.add(new Button("/Control", "current_values", null, "Faff"));
+    var apiwidget = new Widget("Home");
+    apiwidget.add(new Button("/Door", "buzz", null, "Buzz Door"));
     apiwidget.add(new Text("/LivingRoom", "temperature"));
     apiwidget.add(new Debug());
     $("#result").append(apiwidget.element);
-    /*var api = mrpc("/api");
-    api.rpc("/SimpleService", "echo", "Hello home!").done(function(result) {
-        $("#result").text(JSON.stringify(result));
-    });*/
 </script>
+{% endblock %}

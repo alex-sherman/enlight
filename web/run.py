@@ -1,13 +1,28 @@
-from mrpc.web import *
 from flask import Flask, render_template
 import mrpc
+from flaskfix import fix, register
 from mrpc.transport import SocketTransport
+from flask.ext.login import LoginManager, UserMixin, login_required
 
-app = Flask(__name__)
+from mod_mrpc.controller import mod as mod_mrpc
+
+app = fix(Flask(__name__))
+app.config.from_object('config')
 mrpc.use_transport(SocketTransport(0, "192.168.1.4"))
-app.register_blueprint(FlaskForwarder("service", __name__, url_prefix="/api"))
+register(app)
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "auth.login"
+
+@login_manager.user_loader
+def load_user(userid):
+    from mod_auth.controller import get
+    return get(userid)
 
 @app.route('/')
+@login_required
 def index():
     return render_template("index.html")
+
 app.run(host='0.0.0.0', port=8080, debug=True)
