@@ -7,11 +7,18 @@
 <script src="{{url_for('service.mrpcjs')}}"></script>
 <script src="{{url_for('static', filename='class.js')}}"></script>
 <script src="{{url_for('static', filename='widget.js')}}"></script>
+<link href="{{url_for('static', filename='css/main.css')}}" rel="stylesheet">
 
-<div id = "result"></div>
+<body>
 
+    <div id="page-wrapper" class="active">
+        <div class='row'>
+            <div class='col-xs-6' id = "result"></div>
+        </div>
+    </div>
+</body>
 <script>
-    var apiwidget = new Widget();
+    var apiwidget = new Widget("Herp");
     apiwidget.add(new Button("/SimpleService", "echo", "Hello home!", "Echo"));
     apiwidget.add(new Button("/Control", "current_values", null, "Faff"));
     apiwidget.add(new Text("/LivingRoom", "temperature"));

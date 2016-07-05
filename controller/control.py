@@ -43,9 +43,3 @@ class Control(mrpc.Service):
     def current_values(self):
         return {path: dict(service.current_values) for path, service in self.services.items()}
 
-if __name__ == "__main__":
-    mrpc.use_transport(SocketTransport(host = "192.168.1.4"))
-    control = Control()
-    mrpc.register_service(control)
-    control.listen({"path": "/LivingRoom", "procedure": "temperature"})
-    mrpc.LocalNode.run()

@@ -26,14 +26,23 @@ Element.update();
 window.setInterval(Element.update, 2000);
 
 var Widget = Element.extend({
-    init: function Widget() {
+    init: function Widget(title) {
         this.BaseClass.init.apply(this);
         this.children = [];
-        this.element = $("<div></div>");
+        this.element = $(
+"<div class='widget'>\
+    <div class='widget-title'>\
+        <div class='widget-title-text'></div>\
+        <button class='btn btn-sm btn-secondary pull-right' data-toggle='collapse' data-target='.widget-body'>Hide</button>\
+    </div><div class='widget-body collapse in'></div></div>");
+        this.body = this.element.find(".widget-body");
+        this.title = this.element.find(".widget-title-text");
+        this.title.text(title);
+        this.element.append(this.body);
     },
     add: function(child) {
         this.children.push(child);
-        this.element.append(child.element);
+        this.body.append(child.element);
     }
 });
 
