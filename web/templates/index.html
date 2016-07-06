@@ -1,17 +1,29 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class='row'>
-    <div class='col-xs-6' id = "result"></div>
+<div class='nav-container'>
+    <div class='nav-header'>
+        <i class="fa fa-bars" aria-hidden="true"></i>
+        <div class='nav-title'>Enlight</div>
+    </div>
+
+</div>
+<div id='content' class='row'>
+    <div class='col-xs-12 col-sm-6 col-md-4' id = "main"></div>
+    <div class='col-xs-12 col-sm-6 col-md-4' id = "debug"></div>
 </div>
 {% endblock %}
 
 {% block script %}
 <script>
     var apiwidget = new Widget("Home");
-    apiwidget.add(new Button("/Door", "buzz", null, "Buzz Door"));
+    apiwidget.add(new RPCButton("Buzz Door", "/Door", "buzz", null));
     apiwidget.add(new Text("/LivingRoom", "temperature"));
-    apiwidget.add(new Debug());
-    $("#result").append(apiwidget.element);
+    var debugwidget = new Widget("Debug");
+    debugwidget.add(new RPCButton("Test", "/Control", "current_values", null));
+    debugwidget.add(new Debug());
+    debugwidget.collapse_div.toggleClass("in");
+    $("#main").append(apiwidget.element);
+    $("#debug").append(debugwidget.element);
 </script>
 {% endblock %}

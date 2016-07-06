@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
     <title>{% block title %}Enlight{% endblock %}</title>
     <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
@@ -15,7 +16,7 @@
     {% block includes %}{% endblock %}
 </head>
 <body>
-    <div id="page-wrapper" class="active">
+    <div id="container">
         {% block content %}
         {% endblock %}
     </div>

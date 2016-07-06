@@ -33,25 +33,35 @@ var Widget = Element.extend({
 "<div class='widget'>\
     <div class='widget-title'>\
         <div class='widget-title-text'></div>\
-        <button class='btn btn-sm btn-secondary pull-right' data-toggle='collapse' data-target='.widget-body'>Hide</button>\
-    </div><div class='widget-body collapse in'></div></div>");
+        <div class='btn pull-right'><i class='fa fa-compress pull-right'></i></div>\
+    </div>\
+    <div class=\"widget-collapse collapse in\">\
+        <div class='widget-body'></div>\
+    </div>\
+</div>");
+        this.collapse_div = this.element.find(".widget-collapse");
+        this.collapse_btn = this.element.find(".btn");
+        this.collapse_btn.click(() => this.collapse());
         this.body = this.element.find(".widget-body");
         this.title = this.element.find(".widget-title-text");
         this.title.text(title);
-        this.element.append(this.body);
     },
     add: function(child) {
         this.children.push(child);
         this.body.append(child.element);
+    },
+    collapse: function() {
+        if(this.collapse_div.hasClass("collapsing"))
+            return;
+        this.collapse_div.collapse('toggle');
+        this.element.find(".fa").toggleClass("fa-compress fa-expand")
     }
 });
 
 var Button = Element.extend({
-    init: function Button(path, procedure, value, name) {
-        this.BaseClass.init.apply(this);
-        this.path = path;
-        this.procedure = procedure;
-        this.value = value;
+    init: function Button(name, callback) {
+        Element.init.apply(this);
+        this.callback = callback;
         this.name = name || "Button";
         this.element = $("<div></div>");
         this.button = $("<button class='btn btn-primary'></button>");
@@ -80,20 +90,32 @@ var Button = Element.extend({
         this.button.clearQueue();
         this.button.stop();
         this.button.switchClass(this.remove_classes("btn-secondary"), "btn-secondary", 0);
-        api.rpc(this.path, this.procedure, this.value)
-        .done(function(result) {
-            console.log(result);
-            self.indicate("btn-success");
-        })
-        .fail(function(error) {
-            self.indicate("btn-danger");
-        })
+        this.callback()
+            .done(function(result) {
+                console.log(result);
+                self.indicate("btn-success");
+            })
+            .fail(function(error) {
+                self.indicate("btn-danger");
+            });
     }
 });
 
+var RPCButton = Button.extend({
+    init: function RPCButton(name, path, procedure, value) {
+        this.path = path;
+        this.procedure = procedure;
+        this.value = value;
+        Button.init.apply(this, [name, () => this.rpc()]);
+    },
+    rpc: function () {
+        return api.rpc(this.path, this.procedure, this.value);
+    }
+})
+
 var Text = Element.extend({
     init: function Text(path, procedure) {
-        this.BaseClass.init.apply(this);
+        Element.init.apply(this);
         this.path = path;
         this.procedure = procedure
         this.element = $("<div></div>");
@@ -110,23 +132,22 @@ var Text = Element.extend({
 
 var Debug = Element.extend({
     init: function Debug() {
-        this.BaseClass.init.apply(this);
+        Element.init.apply(this);
         this.path = $("<input type=text' size='20'>");
         this.procedure = $("<input type=text' size='20'>");
         this.value = $("<input type=text' size='20'>");
-        this.button = $("<button class='btn btn-primary'>RPC</button>")
-        this.button.click(() => this.handler());
+        this.button = new Button("RPC", () => this.handler());
         this.element = $("<div></div>");
         this.element.append(this.path);
         this.element.append(this.procedure);
         this.element.append(this.value);
-        this.element.append(this.button);
+        this.element.append(this.button.element);
     },
     handler: function() {
         var value = this.value.val();
         value = value || "null"
         value = JSON.parse(value);
-        api.rpc(this.path.val(), this.procedure.val(), value)
+        return api.rpc(this.path.val(), this.procedure.val(), value)
         .done(function(result) {
             console.log(result);
         });
