@@ -1,12 +1,46 @@
 var Element = Class.extend({
-    init: function Element() {
+    init: function Element(args) {
+        this.element = $(this.constructor.html || "<div></div>");
+        this.args = this.args || {};
+        $.extend(true, this.args, args);
+        this.children = (this.args.children || []).map(Element.from_json);
+        this.children.map((child) => this.add(child));
         this.id = Element.current_id ++;
-        this.element = null;
         Element.elements.push(this);
+    },
+    body: function() {
+        return this.element;
+    },
+    add_element: function(element) {
+        this.element.append(element);
+    },
+    add: function(child) {
+        this.children.push(child);
+        this.add_element(child.element);
+    },
+    get_json: function() {
+        var obj = this.args;
+        obj.children = this.children.map((child) => child.save());
+    },
+    save: function() {
+        return {type: this.constructor.name, args: this.get_json()};
     }
 });
 Element.current_id = 0;
 Element.elements = [];
+Element.types = {}
+
+Element._extend = Element.extend;
+Element.extend = function extend(args) {
+    var output = Element._extend.apply(this, arguments);
+    Element.types[args.init.name] = output;
+    return output;
+}
+
+Element.from_json = function from_json(obj) {
+    return new Element.types[obj.type](obj.args);
+}
+
 var api = mrpc("/api");
 
 api.values = {}
@@ -22,48 +56,45 @@ Element.update = function() {
         });
     })
 };
-Element.update();
-window.setInterval(Element.update, 2000);
 
 var Widget = Element.extend({
-    init: function Widget(title) {
-        this.BaseClass.init.apply(this);
-        this.children = [];
-        this.element = $(
-"<div class='widget'>\
-    <div class='widget-title'>\
-        <div class='widget-title-text'></div>\
-        <div class='btn pull-right'><i class='fa fa-compress pull-right'></i></div>\
-    </div>\
-    <div class=\"widget-collapse collapse in\">\
-        <div class='widget-body'></div>\
-    </div>\
-</div>");
+    init: function Widget() {
+        this.args = {title: "Widget", children: []};
+        Element.init.apply(this, arguments);
         this.collapse_div = this.element.find(".widget-collapse");
-        this.collapse_btn = this.element.find(".btn");
-        this.collapse_btn.click(() => this.collapse());
-        this.body = this.element.find(".widget-body");
+        this.element.find(".btn-collapse").click(() => this.collapse());
         this.title = this.element.find(".widget-title-text");
-        this.title.text(title);
+        this.title.text(this.args.title);
     },
     add: function(child) {
-        this.children.push(child);
-        this.body.append(child.element);
+        this.element.find(".widget-body").append(child.element);
     },
     collapse: function() {
         if(this.collapse_div.hasClass("collapsing"))
             return;
-        this.collapse_div.collapse('toggle');
+        if(document.readyState == 'complete')
+            this.collapse_div.collapse("toggle");
+        else
+            this.collapse_div.toggleClass("in");
         this.element.find(".fa").toggleClass("fa-compress fa-expand")
     }
 });
+Widget.html = 
+"<div class='widget'>\
+    <div class='widget-title'>\
+        <div class='widget-title-text'></div>\
+        <div class='btn btn-collapse pull-right'><i class='fa fa-compress pull-right'></i></div>\
+    </div>\
+    <div class=\"widget-collapse collapse in\">\
+        <div class='widget-body'></div>\
+    </div>\
+</div>";
 
 var Button = Element.extend({
     init: function Button(name, callback) {
         Element.init.apply(this);
         this.callback = callback;
         this.name = name || "Button";
-        this.element = $("<div></div>");
         this.button = $("<button class='btn btn-primary'></button>");
         this.button.text(this.name);
         this.button.click(() => this.handler());
@@ -101,17 +132,31 @@ var Button = Element.extend({
     }
 });
 
-var RPCButton = Button.extend({
-    init: function RPCButton(name, path, procedure, value) {
-        this.path = path;
-        this.procedure = procedure;
-        this.value = value;
-        Button.init.apply(this, [name, () => this.rpc()]);
+var RPCButton = Element.extend({
+    init: function RPCButton() {
+        this.args = {title: "Button"}
+        Element.init.apply(this, arguments);
+        if(this.args.command)
+            add_command(this.args.command, () => this.handler());
+        if(this.args.icon)
+            this.element.find(".button-title > i").addClass(this.args.icon);
+        this.element.find(".button-title > p").text(this.args.title);
+
+        this.button = new Button(this.args.button_text, () => this.rpc());
+        this.button.element.addClass("pull-right");
+        this.element.find(".button-row").append(this.button.element);
     },
     rpc: function () {
-        return api.rpc(this.path, this.procedure, this.value);
+        return api.rpc(this.args.path, this.args.procedure, this.args.value);
     }
-})
+});
+RPCButton.html =
+"<div class='row'>\
+    <div class='button-row col-xs-12'>\
+        \
+        <div class='button-title'><i class='fa'></i><p></p></div>\
+    </div>\
+</div>";
 
 var Text = Element.extend({
     init: function Text(path, procedure) {
@@ -137,7 +182,6 @@ var Debug = Element.extend({
         this.procedure = $("<input type=text' size='20'>");
         this.value = $("<input type=text' size='20'>");
         this.button = new Button("RPC", () => this.handler());
-        this.element = $("<div></div>");
         this.element.append(this.path);
         this.element.append(this.procedure);
         this.element.append(this.value);

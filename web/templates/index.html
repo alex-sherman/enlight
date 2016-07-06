@@ -1,29 +1,62 @@
 {% extends "base.html" %}
 
+{% block includes %}
+<script src="{{url_for('static', filename='speech.js')}}"></script>
+{% endblock %}
 {% block content %}
-<div class='nav-container'>
-    <div class='nav-header'>
-        <i class="fa fa-bars" aria-hidden="true"></i>
-        <div class='nav-title'>Enlight</div>
-    </div>
-
-</div>
-<div id='content' class='row'>
-    <div class='col-xs-12 col-sm-6 col-md-4' id = "main"></div>
-    <div class='col-xs-12 col-sm-6 col-md-4' id = "debug"></div>
+<div class='row'>
+    <div class='col-xs-12 col-sm-5 col-sm-offset-1 col-md-4 col-md-offset-2' id = "main"></div>
+    <div class='col-xs-12 col-sm-5 col-md-4' id = "debug"></div>
 </div>
 {% endblock %}
 
 {% block script %}
 <script>
-    var apiwidget = new Widget("Home");
-    apiwidget.add(new RPCButton("Buzz Door", "/Door", "buzz", null));
-    apiwidget.add(new Text("/LivingRoom", "temperature"));
-    var debugwidget = new Widget("Debug");
-    debugwidget.add(new RPCButton("Test", "/Control", "current_values", null));
-    debugwidget.add(new Debug());
-    debugwidget.collapse_div.toggleClass("in");
+var widgetjson = {
+    type: "Widget",
+    args: {
+        title: "Home",
+        children: [
+            {
+                type: "RPCButton",
+                args: {
+                    title: "Front Door",
+                    button_text: "Buzz",
+                    path: "/Door",
+                    procedure: "buzz",
+                    icon: "fa-sign-in"
+                }
+            }
+        ]
+    }
+}
+var debugjson = {
+    type: "Widget",
+    args: {
+        title: "Debug",
+        children: [
+            {
+                type: "RPCButton",
+                args: {
+                    title: "Test",
+                    path: "/Control",
+                    procedure: "current_values",
+                    command: "buzz",
+                    icon: "fa-question"
+                }
+            },
+            {
+                type: "Debug"
+            }
+        ]
+    }
+}
+    var apiwidget = Element.from_json(widgetjson);
+    var debugwidget = Element.from_json(debugjson);
     $("#main").append(apiwidget.element);
     $("#debug").append(debugwidget.element);
+    debugwidget.collapse();
+    Element.update();
+    window.setInterval(Element.update, 2000);
 </script>
 {% endblock %}

@@ -8,7 +8,7 @@ from mod_mrpc.controller import mod as mod_mrpc
 
 app = fix(Flask(__name__))
 app.config.from_object('config')
-mrpc.use_transport(SocketTransport(0, '192.168.1.4'))
+mrpc.use_transport(SocketTransport(0))
 register(app)
 
 login_manager = LoginManager()
