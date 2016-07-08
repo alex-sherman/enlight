@@ -29,6 +29,17 @@ var Element = Class.extend({
 Element.current_id = 0;
 Element.elements = [];
 Element.types = {}
+Element.colors = {
+    danger: "#ff534f",
+}
+Element.info = function(text, color) {
+    var info = $("#info-box");
+    color = color || "inherit";
+    if(color in Element.colors)
+        color = Element.colors[color];
+    info.text(text);
+    info.fadeIn(200).delay(2000).fadeOut(200);
+}
 
 Element._extend = Element.extend;
 Element.extend = function extend(args) {
@@ -95,10 +106,8 @@ var Button = Element.extend({
         Element.init.apply(this);
         this.callback = callback;
         this.name = name || "Button";
-        this.button = $("<button class='btn btn-primary'></button>");
-        this.button.text(this.name);
-        this.button.click(() => this.handler());
-        this.element.append(this.button);
+        this.element.text(this.name);
+        this.element.click(() => this.handler());
         this.btn_classes = ["btn-primary", "btn-secondary", "btn-danger", "btn-success"];
     },
     remove_classes: function(class_) {
@@ -109,21 +118,18 @@ var Button = Element.extend({
         }, "");
     },
     indicate: function(class_, delay) {
-        this.button.clearQueue();
-        this.button.stop();
+        this.element.clearQueue();
         if(delay == undefined)
             delay = 200;
-        this.button.switchClass(this.remove_classes(class_), class_, 0);
-        this.button.delay(1000).switchClass(this.remove_classes("btn-primary"), "btn-primary", delay)
+        this.element.switchClass(this.remove_classes(class_), class_, 0);
+        this.element.delay(1000).switchClass(this.remove_classes("btn-primary"), "btn-primary", delay)
     },
     handler: function() {
         var self = this;
-        this.button.clearQueue();
-        this.button.stop();
-        this.button.switchClass(this.remove_classes("btn-secondary"), "btn-secondary", 0);
+        this.element.clearQueue();
+        this.element.switchClass(this.remove_classes("btn-secondary"), "btn-secondary", 0);
         this.callback()
             .done(function(result) {
-                console.log(result);
                 self.indicate("btn-success");
             })
             .fail(function(error) {
@@ -131,32 +137,57 @@ var Button = Element.extend({
             });
     }
 });
+Button.html = "<button class='btn btn-primary'></button>";
 
-var RPCButton = Element.extend({
-    init: function RPCButton() {
-        this.args = {title: "Button"}
+var WidgetRow = Element.extend({
+    init: function WidgetRow() {
+        this.args = {title: "", type: "button"}
         Element.init.apply(this, arguments);
         if(this.args.command)
-            add_command(this.args.command, () => this.handler());
+            add_command(this.args.command, (text) => this.input.handler());
         if(this.args.icon)
-            this.element.find(".button-title > i").addClass(this.args.icon);
-        this.element.find(".button-title > p").text(this.args.title);
-
-        this.button = new Button(this.args.button_text, () => this.rpc());
-        this.button.element.addClass("pull-right");
-        this.element.find(".button-row").append(this.button.element);
+            this.element.find(".widget-row-title > i").addClass(this.args.icon);
+        this.element.find(".widget-row-title > p").text(this.args.title);
+        if(this.args.type == "button")
+            this.input = new Button(this.args.button_text, () => this.rpc());
+        else if(this.args.type == "slider")
+            this.input = new Slider()
+        this.input.element.addClass("pull-right");
+        this.element.find(".widget-row").append(this.input.element);
+        this.info = this.element.find(".widget-row-info");
+        this.info.hide();
     },
     rpc: function () {
-        return api.rpc(this.args.path, this.args.procedure, this.args.value);
+        var self = this;
+        var out = api.rpc(this.args.path, this.args.procedure, this.args.value);
+        if(this.args.showresult)
+            out.done(function(result) {
+                Element.info(JSON.stringify(result));
+            });
+        return out;
     }
 });
-RPCButton.html =
+WidgetRow.html =
 "<div class='row'>\
-    <div class='button-row col-xs-12'>\
-        \
-        <div class='button-title'><i class='fa'></i><p></p></div>\
+    <div class='widget-row col-xs-12'>\
+        <div class='widget-row-title'><i class='fa'></i><p></p></div>\
+    </div>\
+</div>\
+<div class='row'>\
+    <div class='widget-row-info col-xs-12'>\
     </div>\
 </div>";
+
+var Slider = Element.extend({
+    init: function Slider() {
+        Element.init.apply(this, arguments);
+    }
+});
+Slider.html =
+"<label class='switch'>\
+  <input type='checkbox'>\
+  <div class='slider round'></div>\
+</label>";
 
 var Text = Element.extend({
     init: function Text(path, procedure) {
@@ -193,7 +224,7 @@ var Debug = Element.extend({
         value = JSON.parse(value);
         return api.rpc(this.path.val(), this.procedure.val(), value)
         .done(function(result) {
-            console.log(result);
+            Element.info(JSON.stringify(result));
         });
     }
 })

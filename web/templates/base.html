@@ -13,20 +13,22 @@
     <script src="{{url_for('static', filename='class.js')}}"></script>
     <script src="{{url_for('static', filename='widget.js')}}"></script>
     <link href="{{url_for('static', filename='css/main.css')}}" rel="stylesheet">
+    <link href="{{url_for('static', filename='css/slider.css')}}" rel="stylesheet">
     {% block includes %}{% endblock %}
 </head>
 <body>
-    <div id="container">
-        <div class='nav-container'>
-            <div class='nav-header'>
-                <i class="fa fa-bars" aria-hidden="true"></i>
-                <div class='nav-title'>Enlight</div>
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class='nav-header'>
+            <div>
+                <div id="nav-title"><i class="fa fa-bars" aria-hidden="true"></i>Enlight</div>
                 <div class='btn speech pull-right'><i class='fa fa-microphone'></i></div>
-                <div class='speech-info pull-right'>Faff</div>
+                <div id="speech-info"><p></p></div>
             </div>
-
         </div>
-        <div id='content'>
+        <div id="info-box" class="info-box alert alert-success" style="display: none;"></div>
+    </nav>
+    <div id="container" data-role="page">
+        <div id='content' data-role="main" class="ui-content">
         {% block content %}
         {% endblock %}
         </div>

@@ -18,9 +18,10 @@ var widgetjson = {
         title: "Home",
         children: [
             {
-                type: "RPCButton",
+                type: "WidgetRow",
                 args: {
                     title: "Front Door",
+                    type: "button",
                     button_text: "Buzz",
                     path: "/Door",
                     procedure: "buzz",
@@ -36,12 +37,32 @@ var debugjson = {
         title: "Debug",
         children: [
             {
-                type: "RPCButton",
+                type: "WidgetRow",
                 args: {
                     title: "Test",
                     path: "/Control",
                     procedure: "current_values",
-                    command: "buzz",
+                    command: "((open|buzz)( the)? door|buzz.*?(me|in))",
+                    showresult: true,
+                    icon: "fa-question"
+                }
+            },
+            {
+                type: "WidgetRow",
+                args: {
+                    title: "Test",
+                    path: "/Control",
+                    procedure: "current_values",
+                    icon: "fa-question"
+                }
+            },
+            {
+                type: "WidgetRow",
+                args: {
+                    title: "Test",
+                    path: "/Control",
+                    type: "slider",
+                    procedure: "current_values",
                     icon: "fa-question"
                 }
             },
