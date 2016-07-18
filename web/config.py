@@ -20,3 +20,5 @@ CSRF_SESSION_KEY = "o72w4s2cjtn0d9qf-5fg7&muzc=df2e)f^r0+&%&q==q-md1b&"
 
 # Secret key for signing cookies
 SECRET_KEY = "iy!+rg5p#w#3$m5ws02r^!@fq_z878-w8x92sd((ni03ueiptn"
+
+BROADCAST_IP = "192.168.1.255"

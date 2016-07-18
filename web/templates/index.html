@@ -12,91 +12,45 @@
 
 {% block script %}
 <script>
-var widgetjson = {
-    type: "Widget",
-    args: {
-        title: "Home",
-        children: [
-            {
-                type: "WidgetRow",
-                args: {
-                    title: "Front Door",
-                    type: "button",
-                    button_text: "Buzz",
-                    path: "/Door.buzz",
-                    icon: "fa-sign-in"
-                }
-            },
-            {
-                type: "WidgetRow",
-                args: {
-                    title: "LivingRoom",
-                    type: "slider",
-                    path: "/LivingRoom.relay",
-                    icon: "fa-sign-in"
-                }
-            },
-            {
-                type: "WidgetRow",
-                args: {
-                    title: "Desk",
-                    type: "slider",
-                    path: "/Desk.relay",
-                    icon: "fa-sign-in"
-                }
-            },
-            {
-                type: "WidgetRow",
-                args: {
-                    title: "Couch",
-                    type: "slider",
-                    path: "/Couch.relay",
-                    icon: "fa-sign-in"
-                }
-            },
-        ]
-    }
-}
+var widgetjson = {{ layout|safe }}
 var debugjson = {
     type: "Widget",
-    args: {
-        title: "Debug",
-        children: [
-            {
-                type: "WidgetRow",
-                args: {
-                    title: "Test",
-                    path: "/Control",
-                    procedure: "current_values",
-                    showresult: true,
-                    command: "((open|buzz)( the)? door|(let|buzz).*?(me|in))",
-                    icon: "fa-question"
-                }
-            },
-            {
-                type: "WidgetRow",
-                args: {
-                    title: "Test",
-                    path: "/Control",
-                    procedure: "current_values",
-                    icon: "fa-question"
-                }
-            },
-            {
-                type: "WidgetRow",
-                args: {
-                    title: "Test",
-                    path: "/Control",
-                    type: "slider",
-                    procedure: "current_values",
-                    icon: "fa-question"
-                }
-            },
-            {
-                type: "Debug"
+    title: "Debug",
+    children: [
+        {
+            type: "WidgetRow",
+            title: "Test",
+            path: "/Control",
+            procedure: "current_values",
+            showresult: true,
+            command: "((open|buzz)( the)? door|(let|buzz).*?(me|in))",
+            icon: "fa-question"
+        },
+        {
+            type: "WidgetRow",
+            args: {
+                title: "Test",
+                path: "/Control",
+                procedure: "current_values",
+                icon: "fa-question"
             }
-        ]
-    }
+        },
+        {
+            type: "WidgetRow",
+            title: "Test",
+            icon: "fa-question",
+            children: [
+                {
+                    type: "Slider",
+                    path: "/Control",
+                    procedure: "current_values",
+                }
+            ]
+        },
+        {
+            type: "Debug"
+        }
+    ]
 }
     var apiwidget = Element.from_json(widgetjson);
     var debugwidget = Element.from_json(debugjson);

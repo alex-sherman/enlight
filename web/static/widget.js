@@ -15,7 +15,6 @@ var Element = Class.extend({
         this.element.append(element);
     },
     add: function(child) {
-        this.children.push(child);
         this.add_element(child.element);
     },
     get_json: function() {
@@ -23,7 +22,16 @@ var Element = Class.extend({
         obj.children = this.children.map((child) => child.save());
     },
     save: function() {
-        return {type: this.constructor.name, args: this.get_json()};
+        return $.extend(true, this.get_json(), {type: this.constructor.name});
+    },
+    rpc: function (value) {
+        var self = this;
+        var out = api.rpc(this.args.path, value);
+        if(this.args.showresult)
+            out.done(function(result) {
+                Element.info(JSON.stringify(result));
+            });
+        return out;
     }
 });
 Element.current_id = 0;
@@ -50,7 +58,7 @@ Element.extend = function extend(args) {
 }
 
 Element.from_json = function from_json(obj) {
-    return new Element.types[obj.type](obj.args);
+    return new Element.types[obj.type](obj);
 }
 
 var api = mrpc("/api");
@@ -103,11 +111,10 @@ Widget.html =
 </div>";
 
 var Button = Element.extend({
-    init: function Button(name, callback) {
-        Element.init.apply(this);
-        this.callback = callback;
-        this.name = name || "Button";
-        this.element.text(this.name);
+    init: function Button() {
+        Element.init.apply(this, arguments);
+        this.text = this.args.text || "Button";
+        this.element.text(this.text);
         this.element.click(() => this.handler());
         this.btn_classes = ["btn-primary", "btn-secondary", "btn-danger", "btn-success"];
     },
@@ -129,7 +136,7 @@ var Button = Element.extend({
         var self = this;
         this.element.clearQueue();
         this.element.switchClass(this.remove_classes("btn-secondary"), "btn-secondary", 0);
-        this.callback()
+        this.rpc()
             .done(function(result) {
                 self.indicate("btn-success");
             })
@@ -144,30 +151,15 @@ var WidgetRow = Element.extend({
     init: function WidgetRow() {
         this.args = {title: "", type: "button"}
         Element.init.apply(this, arguments);
-        if(this.args.command)
-            add_command(this.args.command, (text) => this.input.handler());
         if(this.args.icon)
             this.element.find(".widget-row-title > i").addClass(this.args.icon);
         this.element.find(".widget-row-title > p").text(this.args.title);
-        if(this.args.type == "button")
-            this.input = new Button(this.args.button_text, () => this.rpc(this.args.value));
-        else if(this.args.type == "slider")
-            this.input = new Slider((value) => this.rpc(value));
-        else if(this.args.type == "text")
-            this.input = new Text(this.args.path, this.args.procedure);
-        this.input.element.addClass("pull-right");
-        this.element.find(".widget-row").append(this.input.element);
         this.info = this.element.find(".widget-row-info");
         this.info.hide();
     },
-    rpc: function (value) {
-        var self = this;
-        var out = api.rpc(this.args.path, value);
-        if(this.args.showresult)
-            out.done(function(result) {
-                Element.info(JSON.stringify(result));
-            });
-        return out;
+    add: function(child) {
+        child.element.addClass("pull-right");
+        this.element.find(".widget-row").append(child.element)
     }
 });
 WidgetRow.html =
@@ -184,9 +176,10 @@ WidgetRow.html =
 var Slider = Element.extend({
     init: function Slider(on_click) {
         Element.init.apply(this, arguments);
-        var slider = this.element.find("input");
+        this.slider = this.element.find("input");
         var self = this;
-        slider.click(function() { on_click(slider.prop("checked")); })
+        this.rpc().done((result) => self.slider.prop("checked", result));
+        this.slider.click(function() { self.rpc(self.slider.prop("checked")); })
     }
 });
 Slider.html =

@@ -1,0 +1,46 @@
+{
+    "type": "Widget",
+    "title": "Home",
+    "children": [{
+        "type": "WidgetRow",
+        "title": "Front Door",
+        "icon": "fa-sign-in",
+        "children": [{
+            "type": "Button",
+            "text": "Buzz",
+            "path": "/Door.buzz"
+        }]
+    }, {
+        "type": "WidgetRow",
+        "title": "Hallway",
+        "icon": "fa-lightbulb-o",
+        "children": [{
+            "type": "Slider",
+            "path": "/hallway.relay"
+        }]
+    }, {
+        "type": "WidgetRow",
+        "title": "LivingRoom",
+        "icon": "fa-lightbulb-o",
+        "children": [{
+            "type": "Slider",
+            "path": "/LivingRoom.relay"
+        }]
+    }, {
+        "type": "WidgetRow",
+        "title": "Desk",
+        "icon": "fa-lightbulb-o",
+        "children": [{
+            "type": "Slider",
+            "path": "/Desk.relay"
+        }]
+    }, {
+        "type": "WidgetRow",
+        "title": "Couch",
+        "icon": "fa-lightbulb-o",
+        "children": [{
+            "type": "Slider",
+            "path": "/Couch.relay"
+        }]
+    }]
+}

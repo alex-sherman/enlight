@@ -6,6 +6,8 @@ from mrpc.transport import SocketTransport
 from flask.ext.login import LoginManager, UserMixin, login_required
 
 from mod_mrpc.controller import mod as mod_mrpc
+from fakedict import JSONFile
+import json
 
 
 app = fix(Flask(__name__))
@@ -24,7 +26,8 @@ def load_user(userid):
 @app.route('/')
 @login_required
 def index():
-    return render_template("index.html")
+    layout = JSONFile("layout.json")
+    return render_template("index.html", layout=json.dumps(layout.dict()))
 
 @app.teardown_appcontext
 def teardown_db(exception):
