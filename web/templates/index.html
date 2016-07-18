@@ -23,8 +23,7 @@ var widgetjson = {
                     title: "Front Door",
                     type: "button",
                     button_text: "Buzz",
-                    path: "/Door",
-                    procedure: "buzz",
+                    path: "/Door.buzz",
                     icon: "fa-sign-in"
                 }
             },
@@ -33,9 +32,16 @@ var widgetjson = {
                 args: {
                     title: "LED",
                     type: "slider",
-                    button_text: "Buzz",
-                    path: "/SimpleService",
-                    procedure: "light",
+                    path: "*.light",
+                    icon: "fa-sign-in"
+                }
+            },
+            {
+                type: "WidgetRow",
+                args: {
+                    title: "Temperature",
+                    type: "text",
+                    procedure: "temperature",
                     icon: "fa-sign-in"
                 }
             }

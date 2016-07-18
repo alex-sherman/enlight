@@ -1,10 +1,9 @@
 var mrpc = function(url) {
     function proxy(url) {
         this.url = url;
-        this.rpc = function rpc(path, procedure, value) {
+        this.rpc = function rpc(path, value) {
             var data = {
                 path: path,
-                procedure: procedure,
                 value: value
             };
             return $.ajax({

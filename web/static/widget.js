@@ -56,7 +56,7 @@ var api = mrpc("/api");
 
 api.values = {}
 Element.update = function() {
-    var p1 = api.rpc("/Control", "current_values")
+    var p1 = api.rpc("/Control.current_values")
     .done(function(values) {
         api.values = values;
     });
@@ -152,6 +152,8 @@ var WidgetRow = Element.extend({
             this.input = new Button(this.args.button_text, () => this.rpc(this.args.value));
         else if(this.args.type == "slider")
             this.input = new Slider((value) => this.rpc(value));
+        else if(this.args.type == "text")
+            this.input = new Text(this.args.path, this.args.procedure);
         this.input.element.addClass("pull-right");
         this.element.find(".widget-row").append(this.input.element);
         this.info = this.element.find(".widget-row-info");
@@ -159,7 +161,7 @@ var WidgetRow = Element.extend({
     },
     rpc: function (value) {
         var self = this;
-        var out = api.rpc(this.args.path, this.args.procedure, value);
+        var out = api.rpc(this.args.path, value);
         if(this.args.showresult)
             out.done(function(result) {
                 Element.info(JSON.stringify(result));

@@ -1,4 +1,5 @@
 from flask import Flask, render_template
+from flask import g
 import mrpc
 from flaskfix import fix, register
 from mrpc.transport import SocketTransport
@@ -6,9 +7,9 @@ from flask.ext.login import LoginManager, UserMixin, login_required
 
 from mod_mrpc.controller import mod as mod_mrpc
 
+
 app = fix(Flask(__name__))
 app.config.from_object('config')
-mrpc.use_transport(SocketTransport(0))
 register(app)
 
 login_manager = LoginManager()
@@ -24,6 +25,12 @@ def load_user(userid):
 @login_required
 def index():
     return render_template("index.html")
+
+@app.teardown_appcontext
+def teardown_db(exception):
+    db = getattr(g, '_mrpc', None)
+    if db is not None:
+        db.close()
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8080, debug=True)

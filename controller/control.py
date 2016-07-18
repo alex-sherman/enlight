@@ -4,17 +4,16 @@ from mrpc.transport import SocketTransport
 from collections import defaultdict
 import time
 
-class Listener(mrpc.Service):
+class Listener(object):
     def __init__(self):
-        mrpc.Service.__init__(self)
         self.past_values = defaultdict(lambda: [])
 
-    def listen(self, procedure):
-        self._methods[procedure] = self.record(procedure)
-
-    def record(self, procedure):
+    def record(self, path):
         def _record(value):
-            self.past_values[procedure].append({"time": time.time(),"value": value})
+            values = self.past_values[path]
+            values.append({"time": time.time(),"value": value})
+            if(len(values) > 10):
+                self.past_values[path] = values[-10:]
         return _record
 
     @property
@@ -22,24 +21,20 @@ class Listener(mrpc.Service):
         return {key: values[-1] for key, values in self.past_values.items() if values}
     
 
-class Control(mrpc.Service):
-    def __init__(self):
-        mrpc.Service.__init__(self)
+class Control(object):
+    def __init__(self, mrpc):
+        self.mrpc = mrpc
         self.services = {}
 
-    @mrpc.service.method
     def listen(self, path, procedure):
-        if path not in self.services:
+        if procedure not in self.services:
             listener = Listener()
-            self.services[path] = listener
-            mrpc.register_service(listener, path)
-        self.services[path].listen(procedure)
+            self.services[procedure] = (listener, self.mrpc.service(listener.record(path), procedure))
+        self.services[procedure][1].respond(path)
 
-    @mrpc.service.method
     def past_values(self):
         return {path: dict(service.past_values) for path, service in self.services.items()}
 
-    @mrpc.service.method
     def current_values(self):
-        return {path: dict(service.current_values) for path, service in self.services.items()}
+        return {path: dict(service[0].current_values) for path, service in self.services.items()}
 
