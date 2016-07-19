@@ -5,8 +5,8 @@
 {% endblock %}
 {% block content %}
 <div class='row'>
-    <div class='col-xs-12 col-sm-5 col-sm-offset-1 col-md-4 col-md-offset-2' id = "main"></div>
-    <div class='col-xs-12 col-sm-5 col-md-4' id = "debug"></div>
+    <div class='col-xs-12 col-sm-5 col-sm-offset-1 col-md-4 col-md-offset-2' id="main"></div>
+    <div class='col-xs-12 col-sm-5 col-md-4' id="debug"></div>
 </div>
 {% endblock %}
 
@@ -27,6 +27,17 @@ var widgetjson = {
                     procedure: "buzz",
                     icon: "fa-sign-in"
                 }
+            },
+            {
+                type: "WidgetRow",
+                args: {
+                    title: "LED",
+                    type: "slider",
+                    button_text: "Buzz",
+                    path: "/SimpleService",
+                    procedure: "light",
+                    icon: "fa-sign-in"
+                }
             }
         ]
     }
@@ -42,8 +53,8 @@ var debugjson = {
                     title: "Test",
                     path: "/Control",
                     procedure: "current_values",
-                    command: "((open|buzz)( the)? door|buzz.*?(me|in))",
                     showresult: true,
+                    command: "((open|buzz)( the)? door|(let|buzz).*?(me|in))",
                     icon: "fa-question"
                 }
             },

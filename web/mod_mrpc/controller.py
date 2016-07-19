@@ -9,7 +9,10 @@ mod = Blueprint("mrpc", __name__, url_prefix="/api", template_folder="templates"
 @login_required
 def rpc():
     requestArgs = request.get_json()
-    return json.dumps(mrpc.rpc(**requestArgs).get(timeout = 1))
+    try:
+        return json.dumps(mrpc.rpc(**requestArgs).get(timeout = 1))
+    except Exception as e:
+        return json.dumps({"error": str(e)}), 500
 
 @mod.route("/mrpc.js", methods=["GET"])
 def mrpcjs():

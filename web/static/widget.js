@@ -65,7 +65,7 @@ Element.update = function() {
             if(element.update)
                 element.update();
         });
-    })
+    }, function(error) {});
 };
 
 var Widget = Element.extend({
@@ -149,17 +149,17 @@ var WidgetRow = Element.extend({
             this.element.find(".widget-row-title > i").addClass(this.args.icon);
         this.element.find(".widget-row-title > p").text(this.args.title);
         if(this.args.type == "button")
-            this.input = new Button(this.args.button_text, () => this.rpc());
+            this.input = new Button(this.args.button_text, () => this.rpc(this.args.value));
         else if(this.args.type == "slider")
-            this.input = new Slider()
+            this.input = new Slider((value) => this.rpc(value));
         this.input.element.addClass("pull-right");
         this.element.find(".widget-row").append(this.input.element);
         this.info = this.element.find(".widget-row-info");
         this.info.hide();
     },
-    rpc: function () {
+    rpc: function (value) {
         var self = this;
-        var out = api.rpc(this.args.path, this.args.procedure, this.args.value);
+        var out = api.rpc(this.args.path, this.args.procedure, value);
         if(this.args.showresult)
             out.done(function(result) {
                 Element.info(JSON.stringify(result));
@@ -179,8 +179,11 @@ WidgetRow.html =
 </div>";
 
 var Slider = Element.extend({
-    init: function Slider() {
+    init: function Slider(on_click) {
         Element.init.apply(this, arguments);
+        var slider = this.element.find("input");
+        var self = this;
+        slider.click(function() { on_click(slider.prop("checked")); })
     }
 });
 Slider.html =

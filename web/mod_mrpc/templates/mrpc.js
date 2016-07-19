@@ -6,7 +6,7 @@ var mrpc = function(url) {
                 path: path,
                 procedure: procedure,
                 value: value
-            }
+            };
             return $.ajax({
                 url: url,
                 dataType: "json",
