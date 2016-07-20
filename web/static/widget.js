@@ -179,7 +179,17 @@ var Slider = Element.extend({
         this.slider = this.element.find("input");
         var self = this;
         this.rpc().done((result) => self.slider.prop("checked", result));
-        this.slider.click(function() { self.rpc(self.slider.prop("checked")); })
+        this.slider.click(function() {
+            var previous_value = !this.slider.prop("checked");
+            self.rpc(self.slider.prop("checked"))
+            .fail(() => self.slider.prop("checked", previous_value));
+        }.bind(this))
+        if(this.args.command) {
+            add_command(this.args.command, function() {
+                self.slider.prop("checked", !self.slider.prop("checked"));
+                self.rpc(self.slider.prop("checked"));
+            });
+        }
     }
 });
 Slider.html =
