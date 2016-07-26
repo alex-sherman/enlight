@@ -6,9 +6,10 @@ class Door(object):
         self.mrpc = mrpc
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(7, GPIO.OUT)
+        GPIO.output(7, False)
 
         @mrpc.service
-        def buzz(self):
+        def buzz():
             GPIO.output(7, True)
             print("STARTED")
             self.mrpc.event(2, self._stop)

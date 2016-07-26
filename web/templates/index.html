@@ -30,21 +30,30 @@ var widgetjson = {
             {
                 type: "WidgetRow",
                 args: {
-                    title: "LED",
+                    title: "LivingRoom",
                     type: "slider",
-                    path: "*.light",
+                    path: "/LivingRoom.relay",
                     icon: "fa-sign-in"
                 }
             },
             {
                 type: "WidgetRow",
                 args: {
-                    title: "Temperature",
-                    type: "text",
-                    procedure: "temperature",
+                    title: "Desk",
+                    type: "slider",
+                    path: "/Desk.relay",
                     icon: "fa-sign-in"
                 }
-            }
+            },
+            {
+                type: "WidgetRow",
+                args: {
+                    title: "Couch",
+                    type: "slider",
+                    path: "/Couch.relay",
+                    icon: "fa-sign-in"
+                }
+            },
         ]
     }
 }

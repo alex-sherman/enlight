@@ -14,7 +14,7 @@ MRPC.use_transport(mrpc.transport.SocketTransport(0))
 def rpc():
     requestArgs = request.get_json()
     try:
-        return json.dumps(MRPC.rpc(**requestArgs).get(timeout = 1))
+        return json.dumps(MRPC.rpc(timeout = 1, resend_delay = 0.12, **requestArgs).get())
     except Exception as e:
         return json.dumps({"error": str(e)}), 500
 

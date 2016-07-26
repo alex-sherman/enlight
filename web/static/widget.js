@@ -34,6 +34,7 @@ Element.colors = {
 }
 Element.info = function(text, color) {
     var info = $("#info-box");
+    info.clearQueue().finish();
     color = color || "inherit";
     if(color in Element.colors)
         color = Element.colors[color];
@@ -56,16 +57,16 @@ var api = mrpc("/api");
 
 api.values = {}
 Element.update = function() {
-    var p1 = api.rpc("/Control.current_values")
-    .done(function(values) {
-        api.values = values;
-    });
-    Promise.all([p1]).then(function(values) {
-        Element.elements.map(function(element) {
-            if(element.update)
-                element.update();
-        });
-    }, function(error) {});
+    //var p1 = api.rpc("/Control.current_values")
+    //.done(function(values) {
+    //    api.values = values;
+    //});
+    //Promise.all([p1]).then(function(values) {
+    //    Element.elements.map(function(element) {
+    //        if(element.update)
+    //            element.update();
+    //    });
+    //}, function(error) {});
 };
 
 var Widget = Element.extend({
@@ -214,9 +215,8 @@ var Text = Element.extend({
 var Debug = Element.extend({
     init: function Debug() {
         Element.init.apply(this);
-        this.path = $("<input type=text' size='20'>");
-        this.procedure = $("<input type=text' size='20'>");
-        this.value = $("<input type=text' size='20'>");
+        this.path = $("<input class='col-xs-5' type=text' size='20'>");
+        this.value = $("<input class='col-xs-5' type=text' size='20'>");
         this.button = new Button("RPC", () => this.handler());
         this.element.append(this.path);
         this.element.append(this.procedure);
@@ -227,7 +227,7 @@ var Debug = Element.extend({
         var value = this.value.val();
         value = value || "null"
         value = JSON.parse(value);
-        return api.rpc(this.path.val(), this.procedure.val(), value)
+        return api.rpc(this.path.val(), value)
         .done(function(result) {
             Element.info(JSON.stringify(result));
         });
