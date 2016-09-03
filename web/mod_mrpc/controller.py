@@ -6,8 +6,7 @@ from flask.ext.login import login_required
 
 mod = Blueprint("mrpc", __name__, url_prefix="/api", template_folder="templates")
 
-MRPC = mrpc.MRPC()
-MRPC.use_transport(mrpc.transport.SocketTransport(0))
+MRPC = mrpc.MRPC(local_port = 0)
 
 @mod.route("/rpc", methods = ["POST"])
 @login_required
