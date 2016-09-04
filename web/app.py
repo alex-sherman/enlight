@@ -6,9 +6,6 @@ from mrpc.transport import SocketTransport
 from flask_login import LoginManager, UserMixin, login_required
 from fakedict import JSONFile
 
-from mod_mrpc.controller import mod as mod_mrpc
-
-
 app = fix(Flask(__name__))
 app.config.from_object('config')
 register(app)
