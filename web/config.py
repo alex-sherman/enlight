@@ -16,7 +16,10 @@ CSRF_ENABLED     = True
 
 # Use a secure, unique and absolutely secret key for
 # signing the data. 
-CSRF_SESSION_KEY = "o72w4s2cjtn0d9qf-5fg7&muzc=df2e)f^r0+&%&q==q-md1b&"
+CSRF_SESSION_KEY = "notsecure"
 
 # Secret key for signing cookies
-SECRET_KEY = "iy!+rg5p#w#3$m5ws02r^!@fq_z878-w8x92sd((ni03ueiptn"
+SECRET_KEY = "notsecure"
+
+# If you want to use a different broadcast IP than 255.255.255.255 specify it here
+BROADCAST_IP = "192.168.1.255"

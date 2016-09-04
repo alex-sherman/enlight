@@ -3,7 +3,8 @@ from flask import g
 import mrpc
 from flaskfix import fix, register
 from mrpc.transport import SocketTransport
-from flask.ext.login import LoginManager, UserMixin, login_required
+from flask_login import LoginManager, UserMixin, login_required
+from fakedict import JSONFile
 
 from mod_mrpc.controller import mod as mod_mrpc
 
@@ -24,7 +25,8 @@ def load_user(userid):
 @app.route('/')
 @login_required
 def index():
-    return render_template("index.html")
+    devices = JSONFile("devices.json")
+    return render_template("index.html", dev_groups=devices)
 
 @app.teardown_appcontext
 def teardown_db(exception):

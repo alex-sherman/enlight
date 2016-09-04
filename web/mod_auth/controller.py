@@ -1,6 +1,6 @@
 from flask import Flask, render_template, Blueprint, request, redirect, flash, url_for
 from fakedict import JSONFile
-from flask.ext.login import login_required, login_user, logout_user
+from flask_login import login_required, login_user, logout_user
 
 from Crypto.Hash import SHA256
 mod = Blueprint("auth", __name__, url_prefix="/auth", template_folder="templates")

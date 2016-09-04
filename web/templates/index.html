@@ -14,48 +14,19 @@
 <script>
 var widgetjson = {
     type: "Widget",
-    args: {
-        title: "Home",
-        children: [
-            {
-                type: "WidgetRow",
-                args: {
-                    title: "Front Door",
-                    type: "button",
-                    button_text: "Buzz",
-                    path: "/Door.buzz",
-                    icon: "fa-sign-in"
-                }
-            },
-            {
-                type: "WidgetRow",
-                args: {
-                    title: "LivingRoom",
-                    type: "slider",
-                    path: "/LivingRoom.relay",
-                    icon: "fa-sign-in"
-                }
-            },
-            {
-                type: "WidgetRow",
-                args: {
-                    title: "Desk",
-                    type: "slider",
-                    path: "/Desk.relay",
-                    icon: "fa-sign-in"
-                }
-            },
-            {
-                type: "WidgetRow",
-                args: {
-                    title: "Couch",
-                    type: "slider",
-                    path: "/Couch.relay",
-                    icon: "fa-sign-in"
-                }
-            },
-        ]
-    }
+    {% for group, devs in dev_groups.iteritems() %}
+        args: {
+            title: "{{ group }}",
+            children: [
+                {% for dev in devs %}
+                    {
+                        type: "WidgetRow",
+                        args: {{dev|tojson}}
+                    },
+                {% endfor %}
+            ]
+        }
+    {% endfor %}
 }
 var debugjson = {
     type: "Widget",

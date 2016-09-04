@@ -1,0 +1,15 @@
+{"Home": [
+    {
+        "title": "Front Light",
+        "type": "slider",
+        "path": "/A.light",
+        "icon": "fa-sign-in",
+        "load_state": true
+    },
+    {
+        "title": "Couch Light",
+        "type": "slider",
+        "path": "/B.light",
+        "icon": "fa-sign-in"
+    }
+]}
