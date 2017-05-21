@@ -3,7 +3,7 @@ from flask import g
 import mrpc
 from flaskfix import fix, register
 from mrpc.transport import SocketTransport
-from flask.ext.login import LoginManager, UserMixin, login_required
+from flask_login import LoginManager, UserMixin, login_required
 
 from mod_mrpc.controller import mod as mod_mrpc
 from fakedict import JSONFile
@@ -23,6 +23,12 @@ def load_user(userid):
     from mod_auth.controller import get
     return get(userid)
 
+@login_manager.request_loader
+def load_user_from_request(request):
+    key = request.args.get('api_key')
+    from mod_auth.controller import one_time_pass
+    return one_time_pass(key)
+
 @app.route('/')
 @login_required
 def index():
@@ -36,4 +42,4 @@ def teardown_db(exception):
         db.close()
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8080, debug=True)
+    app.run(use_reloader = False, host='0.0.0.0', port=8080, debug=True)

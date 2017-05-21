@@ -47,7 +47,7 @@ Element.info = function(text, color) {
     if(color in Element.colors)
         color = Element.colors[color];
     info.text(text);
-    info.fadeIn(200).delay(2000).fadeOut(200);
+    info.fadeIn(200).delay(5000).fadeOut(200);
 }
 
 Element._extend = Element.extend;
@@ -146,6 +146,36 @@ var Button = Element.extend({
     }
 });
 Button.html = "<button class='btn btn-primary'></button>";
+var absolutePath = function(href) {
+    var link = document.createElement("a");
+    link.href = href;
+    return (link.protocol+"//"+link.host+link.pathname+link.search+link.hash);
+}
+var OTP = Element.extend({
+    init: function OTP() {
+        Element.init.apply(this, arguments);
+        this.element.text("OTP");
+        this.element.click(() => this.handler());
+        this.btn_classes = ["btn-primary", "btn-secondary", "btn-danger", "btn-success"];
+    },
+    handler: function() {
+        var self = this;
+        $.ajax({
+            url: "/auth/gen_otp",
+            contentType: "application/json",
+            method: "GET",
+            error: function(error) {
+                console.log(error)
+            },
+            success: function(key) {
+                url = absolutePath("/api/rpc?api_key=" + key +
+                    "&args="+JSON.stringify({path: self.args.path}));
+                Element.info(url);
+            }
+        });
+    }
+});
+OTP.html = "<button class='btn btn-warning'></button>";
 
 var WidgetRow = Element.extend({
     init: function WidgetRow() {

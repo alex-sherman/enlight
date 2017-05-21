@@ -6,6 +6,9 @@
         "title": "Front Door",
         "icon": "fa-sign-in",
         "children": [{
+            "type": "OTP",
+            "path": "/Door.buzz"
+        }, {
             "type": "Button",
             "text": "Buzz",
             "path": "/Door.buzz"

@@ -1,11 +1,14 @@
 from flask import Flask, render_template, Blueprint, request, redirect, flash, url_for
 from fakedict import JSONFile
-from flask.ext.login import login_required, login_user, logout_user
+from flask_login import login_required, login_user, logout_user
+from binascii import hexlify
+import os, time
 
 from Crypto.Hash import SHA256
 mod = Blueprint("auth", __name__, url_prefix="/auth", template_folder="templates")
 
 users = JSONFile("users.json")
+one_time_passes = JSONFile("one_time.json")
 
 class User:
     def __init__(self, username):
@@ -25,6 +28,18 @@ def get(userid):
         return User(users[userid])
     return None
 
+def one_time_pass(key):
+    if key in one_time_passes.dict():
+        del one_time_passes[key]
+        return User("one-time-pass")
+    return None
+
+@mod.route('/gen_otp', methods=['GET'])
+@login_required
+def gen_otp():
+    key = hexlify(os.urandom(32))
+    one_time_passes[key] = time.time()
+    return key
 
 @mod.route('/login', methods=['GET', 'POST'])
 def login():
