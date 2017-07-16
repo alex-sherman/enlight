@@ -1,3 +1,5 @@
 *.pyc
 users.json
 layout.json
+api_keys.json
+one_time.json

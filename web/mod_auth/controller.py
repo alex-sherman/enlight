@@ -9,6 +9,7 @@ mod = Blueprint("auth", __name__, url_prefix="/auth", template_folder="templates
 
 users = JSONFile("users.json")
 one_time_passes = JSONFile("one_time.json")
+api_keys = JSONFile("api_keys.json")
 
 class User:
     def __init__(self, username):
@@ -28,10 +29,12 @@ def get(userid):
         return User(users[userid])
     return None
 
-def one_time_pass(key):
+def api_key(key):
     if key in one_time_passes.dict():
         del one_time_passes[key]
         return User("one-time-pass")
+    if key in api_keys.dict():
+        return User(api_keys[key])
     return None
 
 @mod.route('/gen_otp', methods=['GET'])

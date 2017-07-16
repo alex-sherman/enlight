@@ -25,9 +25,15 @@ def load_user(userid):
 
 @login_manager.request_loader
 def load_user_from_request(request):
-    key = request.args.get('api_key')
-    from mod_auth.controller import one_time_pass
-    return one_time_pass(key)
+    key = None
+    if 'api_key' in request.args:
+        key = request.args.get('api_key')
+    if 'api_key' in request.form:
+        key = request.form['api_key']
+    if key is not None:
+        from mod_auth.controller import api_key
+        return api_key(key)
+    return None
 
 @app.route('/')
 @login_required

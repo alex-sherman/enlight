@@ -169,7 +169,7 @@ var OTP = Element.extend({
             },
             success: function(key) {
                 url = absolutePath("/api/rpc?api_key=" + key +
-                    "&args="+JSON.stringify({path: self.args.path}));
+                    "&args="+encodeURIComponent(JSON.stringify({path: self.args.path})));
                 Element.info(url);
             }
         });

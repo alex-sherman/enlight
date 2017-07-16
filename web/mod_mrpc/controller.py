@@ -23,6 +23,7 @@ def rpc():
         except:
             return json.dumps({"error": "Invalid json in request args"}), 500
     try:
+        print(requestArgs)
         return json.dumps(mod.MRPC.rpc(timeout = 1, resend_delay = 0.12, **requestArgs).get())
     except Exception as e:
         return json.dumps({"error": str(e)}), 500
